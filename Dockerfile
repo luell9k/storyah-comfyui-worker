@@ -31,8 +31,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg libgl1 \
  && rm -rf /var/lib/apt/lists/*
 RUN cd /comfyui/custom_nodes \
  && git clone --depth 1 https://github.com/AIFSH/ComfyUI-MuseTalk_FSH \
- && pip install --no-cache-dir -r ComfyUI-MuseTalk_FSH/requirements.txt \
- && pip install --no-cache-dir cuda_malloc
+ && pip install --no-cache-dir -r ComfyUI-MuseTalk_FSH/requirements.txt
+# AIFSH's inference scripts have a broken `from cuda_malloc import ...` import
+# (no such package on PyPI; the ComfyUI internal module it expected was renamed).
+# Patch in a torch-based stub so the modules load cleanly.
+RUN for f in /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference.py \
+            /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference_realtime.py; do \
+      sed -i 's|^from cuda_malloc import cuda_malloc_supported$|import torch as _t\ndef cuda_malloc_supported(): return _t.cuda.is_available()|' "$f"; \
+    done
 RUN pip install --no-cache-dir -U openmim \
  && mim install mmengine \
  && mim install "mmcv>=2.0.1" \
