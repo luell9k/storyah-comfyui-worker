@@ -27,6 +27,7 @@ runpod_volume:
     loras: loras
     text_encoders: text_encoders
     clip: text_encoders
+    audio_encoders: audio_encoders
 YAML
 
 # Defer to the base image's original entrypoint
