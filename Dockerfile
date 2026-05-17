@@ -44,7 +44,7 @@ RUN for f in /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference.py \
 # in legacy setuptools that calls the removed pkgutil.ImpImporter).
 # mmengine/mmdet/mmpose are pure-Python and install fine via plain pip.
 RUN pip install --no-cache-dir \
-      https://download.openmmlab.com/mmcv/dist/cu121/torch2.4/mmcv-2.2.0-cp312-cp312-manylinux1_x86_64.whl \
+      https://download.openmmlab.com/mmcv/dist/cu121/torch2.4.0/mmcv-2.2.0-cp312-cp312-manylinux1_x86_64.whl \
  && pip install --no-cache-dir "mmengine" "mmdet>=3.1.0,<4" "mmpose>=1.1.0,<2"
 
 # Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
