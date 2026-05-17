@@ -39,7 +39,10 @@ RUN for f in /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference.py \
             /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference_realtime.py; do \
       sed -i 's|^from cuda_malloc import cuda_malloc_supported$|import torch as _t\ndef cuda_malloc_supported(): return _t.cuda.is_available()|' "$f"; \
     done
-RUN pip install --no-cache-dir -U openmim \
+# openmim drags in legacy setuptools that crashes on Python 3.12
+# (pkgutil.ImpImporter was removed). Force-upgrade setuptools first.
+RUN pip install --no-cache-dir --upgrade "pip" "setuptools>=69" "wheel" \
+ && pip install --no-cache-dir -U openmim \
  && mim install mmengine \
  && mim install "mmcv>=2.0.1" \
  && mim install "mmdet>=3.1.0" \
