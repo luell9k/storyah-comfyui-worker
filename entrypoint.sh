@@ -37,5 +37,27 @@ runpod_volume:
     audio_encoders: audio_encoders
 YAML
 
+# DIAGNOSTIC: probe MuseTalk custom-node import on each cold boot, write the
+# traceback to the volume so we can read it from another pod. Costs ~3s, runs
+# only on cold start (worker reuse skips it because /start.sh stays attached).
+python3 - <<'PY' 2>&1 | tee "$VOL/musetalk_diag.log"
+import sys, traceback, datetime
+print(f"=== MuseTalk import probe @ {datetime.datetime.utcnow().isoformat()}Z ===")
+sys.path.insert(0, "/comfyui/custom_nodes/ComfyUI-MuseTalk_FSH")
+sys.path.insert(0, "/comfyui")
+print("Python:", sys.version)
+for mod in ["mmpose", "mmpose.apis", "mmdet", "mmcv", "mmengine", "diffusers", "moviepy", "pydub", "xtcocotools"]:
+    try:
+        __import__(mod); print(f"  ok    {mod}")
+    except Exception as e:
+        print(f"  FAIL  {mod}: {type(e).__name__}: {e}")
+try:
+    from nodes import MuseTalk
+    print("OK: MuseTalk class import succeeded")
+except Exception:
+    print("FAIL: MuseTalk class import")
+    traceback.print_exc()
+PY
+
 # Defer to the base image's original entrypoint
 exec /start.sh "$@"
