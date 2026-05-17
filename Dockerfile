@@ -27,7 +27,8 @@ RUN pip install --no-cache-dir "transformers>=4.50,<5"
 # ── MuseTalk lip-sync (AIFSH wrapper) ──────────────────────────────────────
 # Used as a second-pass refinement after Wan-S2V to tighten mouth motion.
 # Heavy deps: mmcv/mmdet/mmpose build can take 15-30 min and is CUDA-sensitive.
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg libgl1 \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      ffmpeg libgl1 build-essential python3.12-dev \
  && rm -rf /var/lib/apt/lists/*
 RUN cd /comfyui/custom_nodes \
  && git clone --depth 1 https://github.com/AIFSH/ComfyUI-MuseTalk_FSH \
