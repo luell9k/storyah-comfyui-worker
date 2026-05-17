@@ -39,14 +39,13 @@ RUN for f in /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference.py \
             /comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/inference_realtime.py; do \
       sed -i 's|^from cuda_malloc import cuda_malloc_supported$|import torch as _t\ndef cuda_malloc_supported(): return _t.cuda.is_available()|' "$f"; \
     done
-# openmim drags in legacy setuptools that crashes on Python 3.12
-# (pkgutil.ImpImporter was removed). Force-upgrade setuptools first.
-RUN pip install --no-cache-dir --upgrade "pip" "setuptools>=69" "wheel" \
- && pip install --no-cache-dir -U openmim \
- && mim install mmengine \
- && mim install "mmcv>=2.0.1" \
- && mim install "mmdet>=3.1.0" \
- && mim install "mmpose>=1.1.0"
+# mmcv 2.2.0 has a prebuilt Python-3.12 wheel at openmmlab's index. Use it
+# directly so we skip openmim (which is broken on Python 3.12: openmim drags
+# in legacy setuptools that calls the removed pkgutil.ImpImporter).
+# mmengine/mmdet/mmpose are pure-Python and install fine via plain pip.
+RUN pip install --no-cache-dir \
+      https://download.openmmlab.com/mmcv/dist/cu121/torch2.4/mmcv-2.2.0-cp312-cp312-manylinux1_x86_64.whl \
+ && pip install --no-cache-dir "mmengine" "mmdet>=3.1.0,<4" "mmpose>=1.1.0,<2"
 
 # Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
 COPY custom_nodes/ /comfyui/custom_nodes/storyah_custom/
