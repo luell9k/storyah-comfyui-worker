@@ -52,6 +52,15 @@ RUN pip install --no-cache-dir \
 # resolved normally (drops the --no-deps hack which made it unimportable).
 RUN pip install --no-cache-dir --no-build-isolation chumpy xtcocotools \
  && pip install --no-cache-dir "mmpose>=1.1.0,<2"
+# mmpose/mmdet pin mmcv<2.2.0 via assert. The only Python-3.12 mmcv wheel
+# available is 2.2.0, so we bump their max-version constants to 3.0.0
+# (their internal APIs are stable across the 2.x line for our needs).
+RUN for pkg in mmpose mmdet; do \
+      f="/opt/venv/lib/python3.12/site-packages/$pkg/__init__.py"; \
+      if [ -f "$f" ]; then \
+        sed -i "s/mmcv_maximum_version = '2\\.[0-9]\\+\\.[0-9]\\+'/mmcv_maximum_version = '3.0.0'/" "$f"; \
+      fi; \
+    done
 
 # Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
 COPY custom_nodes/ /comfyui/custom_nodes/storyah_custom/
