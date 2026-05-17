@@ -24,6 +24,21 @@ RUN cd /comfyui/custom_nodes \
 # Pin transformers to 4.x so it stays compatible with the base image's torch
 RUN pip install --no-cache-dir "transformers>=4.50,<5"
 
+# ── MuseTalk lip-sync (AIFSH wrapper) ──────────────────────────────────────
+# Used as a second-pass refinement after Wan-S2V to tighten mouth motion.
+# Heavy deps: mmcv/mmdet/mmpose build can take 15-30 min and is CUDA-sensitive.
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg libgl1 \
+ && rm -rf /var/lib/apt/lists/*
+RUN cd /comfyui/custom_nodes \
+ && git clone --depth 1 https://github.com/AIFSH/ComfyUI-MuseTalk_FSH \
+ && pip install --no-cache-dir -r ComfyUI-MuseTalk_FSH/requirements.txt \
+ && pip install --no-cache-dir cuda_malloc
+RUN pip install --no-cache-dir -U openmim \
+ && mim install mmengine \
+ && mim install "mmcv>=2.0.1" \
+ && mim install "mmdet>=3.1.0" \
+ && mim install "mmpose>=1.1.0"
+
 # Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
 COPY custom_nodes/ /comfyui/custom_nodes/storyah_custom/
 
