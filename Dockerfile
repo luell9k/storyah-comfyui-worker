@@ -47,7 +47,8 @@ RUN pip install --no-cache-dir \
       https://download.openmmlab.com/mmcv/dist/cu121/torch2.4.0/mmcv-2.2.0-cp312-cp312-manylinux1_x86_64.whl \
  && pip install --no-cache-dir "mmengine" "mmdet>=3.1.0,<4" \
  && pip install --no-cache-dir --no-deps "mmpose>=1.1.0,<2" \
- && pip install --no-cache-dir json_tricks munkres xtcocotools regex shapely
+ && pip install --no-cache-dir json_tricks munkres regex shapely \
+ && pip install --no-cache-dir --no-build-isolation xtcocotools
 
 # Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
 COPY custom_nodes/ /comfyui/custom_nodes/storyah_custom/
