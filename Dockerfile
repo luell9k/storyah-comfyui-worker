@@ -24,6 +24,9 @@ RUN cd /comfyui/custom_nodes \
 # Pin transformers to 4.x so it stays compatible with the base image's torch
 RUN pip install --no-cache-dir "transformers>=4.50,<5"
 
+# Storyah custom nodes (audio→images shim so worker-comfyui picks up TTS output)
+COPY custom_nodes/ /comfyui/custom_nodes/storyah_custom/
+
 # Wire IndexTTS-2's "checkpoints" dir to the network volume so we don't have
 # to bake the 5.5 GB into the image. start.sh creates this symlink at run time
 # (volume is only available at run time, not build).
