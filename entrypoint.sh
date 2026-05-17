@@ -13,6 +13,13 @@ if [ -d "$IDX_CKPT_SRC" ] && [ ! -e "$IDX_CKPT_DST" ]; then
     ln -s "$IDX_CKPT_SRC" "$IDX_CKPT_DST"
 fi
 
+# MuseTalk (AIFSH) expects models under custom_nodes/ComfyUI-MuseTalk_FSH/models.
+MT_SRC="$VOL/musetalk-models"
+MT_DST=/comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/models
+if [ -d "$MT_SRC" ] && [ ! -e "$MT_DST" ]; then
+    ln -s "$MT_SRC" "$MT_DST"
+fi
+
 # Tell ComfyUI to also search /runpod-volume/models for all model categories.
 # This file is read at startup; we overwrite each boot so changes to populate
 # layout get picked up.
