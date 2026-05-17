@@ -7,15 +7,13 @@
 # IndexTTS-2 ckpts: symlinked from /runpod-volume/indextts2-ckpts into the
 #                   custom_nodes dir at container start (volume → image dir).
 
-FROM runpod/worker-comfyui:5.5.0-base
+FROM runpod/worker-comfyui:5.8.5-base
 
 # Avoid timezone/apt-utils prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ── LTX-Video custom node (for LTX-2 / 2.3 family) ─────────────────────────
-RUN cd /comfyui/custom_nodes \
- && git clone --depth 1 https://github.com/Lightricks/ComfyUI-LTXVideo \
- && pip install --no-cache-dir -r ComfyUI-LTXVideo/requirements.txt
+# Wan 2.2 needs no custom node — native ComfyUI ships WanImageToVideo +
+# Wan22ImageToVideoLatent (comfy_extras/nodes_wan.py).
 
 # ── IndexTTS-2 custom node (snicolast wrapper) ─────────────────────────────
 RUN cd /comfyui/custom_nodes \
