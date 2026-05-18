@@ -13,9 +13,10 @@ if [ -d "$IDX_CKPT_SRC" ] && [ ! -e "$IDX_CKPT_DST" ]; then
     ln -s "$IDX_CKPT_SRC" "$IDX_CKPT_DST"
 fi
 
-# MuseTalk (AIFSH) expects models under custom_nodes/ComfyUI-MuseTalk_FSH/models.
+# MuseTalk lives in /opt/musetalk-py310/aifsh and expects models under its
+# own models/ dir. Symlink from the network volume.
 MT_SRC="$VOL/musetalk-models"
-MT_DST=/comfyui/custom_nodes/ComfyUI-MuseTalk_FSH/models
+MT_DST=/opt/musetalk-py310/aifsh/models
 if [ -d "$MT_SRC" ] && [ ! -e "$MT_DST" ]; then
     ln -s "$MT_SRC" "$MT_DST"
 fi
