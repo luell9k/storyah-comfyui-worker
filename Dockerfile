@@ -59,6 +59,12 @@ RUN $MT_PIP install --no-cache-dir \
       ffmpeg-python moviepy omegaconf gdown requests "imageio[ffmpeg]" \
       pydub
 
+# Pre-install chumpy with --no-build-isolation (its setup.py uses legacy
+# imp.* APIs and trips pip's isolated build env). mmpose pulls chumpy as a
+# transitive dep; if mim hits chumpy after build-isolation kicks in, the
+# whole mim install fails.
+RUN $MT_PIP install --no-cache-dir --no-build-isolation chumpy
+
 # MMLab via mim (works on Python 3.10 — fails on 3.12 because openmim drags
 # in legacy setuptools that calls the removed pkgutil.ImpImporter)
 RUN $MT_PIP install --no-cache-dir -U openmim \
