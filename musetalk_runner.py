@@ -31,12 +31,22 @@ def main(video_in: str, audio_in: str, video_out: str, batch_size: int = 2):
         batch_size=batch_size,
         batch_size_fa=1,
     )
-    written = mt(video_in, audio_in)
-    # AIFSH writes to its own output dir; copy to requested path.
-    if os.path.abspath(written) != os.path.abspath(video_out):
-        os.makedirs(os.path.dirname(os.path.abspath(video_out)), exist_ok=True)
-        os.replace(written, video_out)
-    print(video_out)
+    silent = mt(video_in, audio_in)
+    # AIFSH's inference produces a SILENT MP4 (the cmd_combine_audio line is
+    # commented out in inference.py). Mux audio in ourselves.
+    import subprocess
+    out_abs = os.path.abspath(video_out)
+    os.makedirs(os.path.dirname(out_abs), exist_ok=True)
+    subprocess.run([
+        "ffmpeg", "-y", "-v", "error",
+        "-i", silent,
+        "-i", audio_in,
+        "-c:v", "copy", "-c:a", "aac",
+        "-map", "0:v:0", "-map", "1:a:0",
+        "-shortest",
+        out_abs,
+    ], check=True)
+    print(out_abs)
 
 
 if __name__ == "__main__":
